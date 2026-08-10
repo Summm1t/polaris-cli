@@ -10,14 +10,15 @@ https://polaris.incubator.apache.org/in-dev/unreleased/command-line-interface/
 
 ## Image overview
 
-The `Dockerfile` uses a two-stage build on `alpine:3.23.5`:
+The `Dockerfile` uses a two-stage build on `alpine:3.24.1`:
 
 1. **`build-stage`** — installs Python 3 and creates a virtualenv at `/app/venv`, then installs
    `apache-polaris` into it with `pip` using the pinned version from
    [`requirements.txt`](requirements.txt) (currently `1.7.0`).
-2. **`runtime-stage`** — a fresh Alpine base with only `python3`, `jq`, and `curl`, into which the
-   populated virtualenv is copied from the build stage. This keeps the final image free of build
-   tooling.
+2. **`runtime-stage`** — a fresh Alpine base with only `python3` and `curl`, into which the
+   populated virtualenv is copied from the build stage. It also downloads the official `jq 1.8.2`
+   Linux binary from the upstream release and verifies its SHA-256 checksum, so `jq` is available
+   in the final image without relying on Alpine's vulnerable stable package.
 
 `PATH` includes `/app/venv/bin`, so the `polaris` executable is available directly. The default
 `CMD` is `/app/venv/bin/polaris -h`.
