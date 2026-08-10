@@ -39,5 +39,9 @@ ENV PATH="/app/venv/bin:$PATH"
 WORKDIR /app
 RUN apk update && apk upgrade && apk add --no-cache bash python3 jq curl
 COPY --from=build-stage /app/venv /app/venv
+RUN rm -Rf /app/venv/lib/python3.12/site-packages/pip-* && \
+    rm -Rf /app/venv/lib/python3.12/site-packages/pip && \
+    rm -Rf /app/venv/lib/python3.12/site-packages/setuptools-* && \
+    rm -Rf /app/venv/lib/python3.12/site-packages/wheel-*
 
 CMD ["/app/venv/bin/polaris", "-h"]
