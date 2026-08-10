@@ -16,7 +16,9 @@
 # specific language governing permissions and limitations
 # under the License.
 #
-FROM alpine:3.23.5 AS build-stage
+ARG ALPINE_VERSION=20260805
+
+FROM alpine:${ALPINE_VERSION} AS build-stage
 
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
@@ -30,18 +32,18 @@ COPY requirements.txt .
 RUN pip install -r requirements.txt
 
 ## -----------------------------------------------------
-FROM alpine:3.23.5 AS runtime-stage
+FROM alpine:${ALPINE_VERSION} AS runtime-stage
 
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 ENV PATH="/app/venv/bin:$PATH"
 
 WORKDIR /app
-RUN apk update && apk upgrade && apk add --no-cache bash python3 jq curl
+RUN apk update && apk upgrade && apk add --no-cache bash python3 curl jq
 COPY --from=build-stage /app/venv /app/venv
-RUN rm -Rf /app/venv/lib/python3.12/site-packages/pip-* && \
-    rm -Rf /app/venv/lib/python3.12/site-packages/pip && \
-    rm -Rf /app/venv/lib/python3.12/site-packages/setuptools-* && \
-    rm -Rf /app/venv/lib/python3.12/site-packages/wheel-*
+RUN rm -Rf /app/venv/lib/python*/site-packages/pip-* && \
+    rm -Rf /app/venv/lib/python*/site-packages/pip && \
+    rm -Rf /app/venv/lib/python*/site-packages/setuptools-* && \
+    rm -Rf /app/venv/lib/python*/site-packages/wheel-*
 
 CMD ["/app/venv/bin/polaris", "-h"]
