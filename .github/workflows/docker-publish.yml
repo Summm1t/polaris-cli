@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - '**'
+  pull_request:
+    branches:
+      - main
 
 jobs:
   version:
@@ -63,7 +66,7 @@ jobs:
           sarif_file: trivy-results.sarif
 
   publish-ghcr:
-    if: github.ref != 'refs/heads/main'
+    if: github.event_name == 'pull_request'
     needs: [version, trivy-scan]
     runs-on: ubuntu-latest
     permissions:
