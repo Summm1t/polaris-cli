@@ -45,6 +45,14 @@ Optionally tag it for your own registry:
 docker build -t <registry>/polaris-cli:<tag> .
 ```
 
+Published images are built for both `linux/amd64` and `linux/arm64`.
+
+To build a multi-platform image yourself, use Docker Buildx and specify the different platforms:
+
+```bash
+docker buildx build --platform linux/amd64,linux/arm64 -t polaris-cli --load .
+```
+
 ## Running the CLI
 
 Show the CLI help (default command):
@@ -80,10 +88,8 @@ You can also run multiple commands in a bash shell, and make use of `jq` to pars
 ```bash
 POLARIS_CLIENT_ID=root
 POLARIS_CLIENT_SECRET=s3cr3t
-docker run --rm --env CLIENT_ID="$POLARIS_CLIENT_ID" --env CLIENT_SECRET="$POLARIS_CLIENT_SECRET" polaris-cli bash -c "\
-  CATALOG_NAMES=\$(polaris --host host.docker.internal catalogs list | jq '.name'); \
-  echo \"Catalog names are: \$CATALOG_NAMES\" \
-  "
+docker run --rm --env CLIENT_ID="$POLARIS_CLIENT_ID" --env CLIENT_SECRET="$POLARIS_CLIENT_SECRET" --env HOST="host.docker.internal" \
+  polaris-cli bash -c "polaris --host host.docker.internal catalogs list" | jq
 ```
 
 ## License
