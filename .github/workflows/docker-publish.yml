@@ -75,6 +75,7 @@ jobs:
     permissions:
       contents: read
       packages: write
+      id-token: write
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -102,12 +103,16 @@ jobs:
           context: .
           platforms: ${{ env.IMAGE_PLATFORMS }}
           push: true
+          provenance: mode=max
+          sbom: true
           tags: ghcr.io/${{ steps.owner.outputs.owner }}/polaris-cli:${{ needs.version.outputs.polaris-version }}_${{ needs.version.outputs.short-sha }}
 
   publish-dockerhub:
     if: github.ref == 'refs/heads/main'
     needs: [version, trivy-scan]
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -130,6 +135,8 @@ jobs:
           context: .
           platforms: ${{ env.IMAGE_PLATFORMS }}
           push: true
+          provenance: mode=max
+          sbom: true
           tags: |
             ${{ secrets.DOCKERHUB_USERNAME }}/polaris-cli:${{ needs.version.outputs.polaris-version }}
             ${{ secrets.DOCKERHUB_USERNAME }}/polaris-cli:latest

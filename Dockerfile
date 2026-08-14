@@ -40,10 +40,14 @@ ENV PATH="/app/venv/bin:$PATH"
 
 WORKDIR /app
 RUN apk update && apk upgrade && apk add --no-cache bash python3 curl jq
+RUN addgroup -S polaris && adduser -S -G polaris -h /app polaris
 COPY --from=build-stage /app/venv /app/venv
 RUN rm -Rf /app/venv/lib/python*/site-packages/pip-* && \
     rm -Rf /app/venv/lib/python*/site-packages/pip && \
     rm -Rf /app/venv/lib/python*/site-packages/setuptools-* && \
-    rm -Rf /app/venv/lib/python*/site-packages/wheel-*
+    rm -Rf /app/venv/lib/python*/site-packages/wheel-* && \
+    chown -R polaris:polaris /app
+
+USER polaris
 
 CMD ["/app/venv/bin/polaris", "-h"]
