@@ -16,7 +16,7 @@
 # specific language governing permissions and limitations
 # under the License.
 #
-ARG ALPINE_VERSION=20260805
+ARG ALPINE_VERSION=3.24.2
 
 FROM alpine:${ALPINE_VERSION} AS build-stage
 

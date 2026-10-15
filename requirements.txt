@@ -1,1 +1,1 @@
-apache-polaris==1.7.0
+apache-polaris==1.8.0
